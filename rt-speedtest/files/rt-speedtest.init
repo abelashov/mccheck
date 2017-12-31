@@ -1,0 +1,31 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2008 OpenWrt.org
+START=99
+
+RUN_D=/var/run
+PID_F=$RUN_D/rt-speedtest.pid
+
+start() {
+	[ -d $RUN_D ] || mkdir -p $RUN_D
+	local args="-d"
+	local url
+	local pingurl
+	local interval
+	local pinglist
+
+	config_load rt-speedtest
+	config_get url daemon url
+	config_get pingurl daemon pingurl
+	config_get interval daemon interval
+	config_get pinglist daemon pinglist
+
+	[ -n "$interval" ] && append args "-i $interval"
+	[ -n "$pingurl" ] && append args "-p $pingurl"
+	[ -n "$pinglist" ] && append args "-l $pinglist"
+	[ -n "$url" ] && append args "$url"
+
+	$DEBUG /bin/rt-speedtest $args &
+}
+stop() {
+	[ -f $PID_F ] && kill $(cat $PID_F)
+}

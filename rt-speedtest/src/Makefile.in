@@ -1,0 +1,53 @@
+# Makefile rt-speedtest
+
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+
+PREFIX      = @prefix@
+INSTALL	    = @INSTALL@
+BINDIR	    = @bindir@
+ETCDIR	    = @sysconfdir@
+INSTALL_DIR = ${INSTALL} -m 0755 -d
+INSTALL_PROG = ${INSTALL} -s -m 0755 
+INSTALL_DATA = ${INSTALL} -m 0644
+
+CC = @CC@
+@SET_MAKE@
+
+DEBUG =   #-g -O0 -D_DEBUG
+#DEBUG =   -pg -O2 -D_PROFILE
+INCLUDE = -I. -I/usr/local/include  
+CFLAGS = @CFLAGS@ ${DEBUG} ${INCLUDE}
+
+BINARY = rt-speedtest
+OBJECTS = rtst_main.o rtst_opts.o rtst_speedtest.o rtst_error.o
+
+all: ${BINARY} Makefile
+
+${BINARY}: ${OBJECTS}
+	${CC} ${CFLAGS} -o ${BINARY} ${OBJECTS} 
+
+rtst_main.o: rtst_main.c rtst.h
+	${CC} ${CFLAGS} -c rtst_main.c
+	
+rtst_opts.o: rtst_opts.c rtst.h
+	${CC} ${CFLAGS} -c rtst_opts.c
+
+rtst_speedtest.o: rtst_speedtest.c rtst.h
+	${CC} ${CFLAGS} -c rtst_speedtest.c
+
+rtst_error.o: rtst_error.c rtst.h
+	${CC} ${CFLAGS} -c rtst_error.c
+
+install:
+	$(INSTALL_DIR) ${BINDIR}
+	$(INSTALL_PROG) ${BINARY} ${BINDIR}
+
+deinstall:
+	rm -f ${BINDIR}/${BINARY}
+clean: 
+	rm -f *.o ${BINARY} ${BINARY}.gmon
+
+distclean: clean
+	rm -rf Makefile config.h config.log config.status config.cache tags \
+	       autom4te.cache

@@ -1,0 +1,4 @@
+config mccheck daemon
+	option interface 'eth1'
+	option group '233.3.1.160'
+	option port '5000'

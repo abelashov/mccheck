@@ -1,0 +1,28 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2008 OpenWrt.org
+START=99
+
+RUN_D=/var/run
+PID_F=$RUN_D/mccheck.pid
+
+start() {
+	[ -d $RUN_D ] || mkdir -p $RUN_D
+	local args="-d"
+	local interface
+	local group
+	local port
+
+	config_load mccheck
+	config_get interface daemon interface
+	config_get group daemon group
+	config_get port daemon port
+
+	[ -n "$interface" ] && append args "-i $interface"
+	[ -n "$port" ] && append args "-p $port"
+	[ -n "$group" ] && append args "$group"
+
+	( sleep 60; $DEBUG /bin/mccheck $args ) &
+}
+stop() {
+	[ -f $PID_F ] && kill $(cat $PID_F)
+}
