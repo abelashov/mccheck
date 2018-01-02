@@ -20,7 +20,7 @@ INCLUDE = -I. -I/usr/local/include
 CFLAGS = @CFLAGS@ ${DEBUG} ${INCLUDE}
 
 BINARY = rt-speedtest
-OBJECTS = rtst_main.o rtst_opts.o rtst_speedtest.o rtst_error.o rtst_ping.0
+OBJECTS = rtst_main.o rtst_opts.o rtst_speedtest.o rtst_error.o rtst_ping.o
 
 all: ${BINARY} Makefile
 
