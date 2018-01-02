@@ -52,7 +52,7 @@ install:
 deinstall:
 	rm -f ${BINDIR}/${BINARY}
 clean: 
-	rm -f *.o ${BINARY} ${BINARY}.gmon
+	rm -f *.o ${BINARY} ${BINARY}.gmon ping
 
 distclean: clean
 	rm -rf Makefile config.h config.log config.status config.cache tags \
