@@ -961,22 +961,25 @@ int rtst_ping_main(int opt, const char **argv, struct rtst_pingstat * st)
 	}
 
 	myid = (uint16_t) getpid();
-	lsa = host_and_af2sockaddr(hostname, 0, AF_INET);
-
-	dotted = xmalloc_sockaddr2dotted_noport(&lsa->u.sa);
-	if (sigsetjmp(env_jmp, 1) == 0) {
-		ping(lsa);
-		if (lsa) {
-			free(lsa);
-			lsa = NULL;
+	lsa = str2sockaddr(hostname, 0, 0);
+	if (lsa == NULL) {
+		exitcode = 1;
+	} else {
+		dotted = xmalloc_sockaddr2dotted_noport(&lsa->u.sa);
+		if (sigsetjmp(env_jmp, 1) == 0) {
+			ping(lsa);
+			if (lsa) {
+				free(lsa);
+				lsa = NULL;
+			}
+			if (dotted) {
+				free((void *)dotted);
+				dotted = NULL;
+			}
+			print_stats_and_exit(EXIT_SUCCESS);
 		}
-		if (dotted) {
-			free((void *)dotted);
-			dotted = NULL;
-		}
-		print_stats_and_exit(EXIT_SUCCESS);
+		/* Point to longjmp */
 	}
-	/* Point to longjmp */
 	tmp_int = exitcode;
 	destroy_global();
 	return tmp_int;
