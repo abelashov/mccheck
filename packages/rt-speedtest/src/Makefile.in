@@ -20,12 +20,15 @@ INCLUDE = -I. -I/usr/local/include
 CFLAGS = @CFLAGS@ ${DEBUG} ${INCLUDE}
 
 BINARY = rt-speedtest
-OBJECTS = rtst_main.o rtst_opts.o rtst_speedtest.o rtst_error.o
+OBJECTS = rtst_main.o rtst_opts.o rtst_speedtest.o rtst_error.o rtst_ping.0
 
 all: ${BINARY} Makefile
 
 ${BINARY}: ${OBJECTS}
 	${CC} ${CFLAGS} -o ${BINARY} ${OBJECTS} 
+
+ping: rtst_ping.c rtst_error.o
+	${CC} ${CFLAGS} -DSTANDALONE=1 -o ping rtst_ping.c rtst_error.o
 
 rtst_main.o: rtst_main.c rtst.h
 	${CC} ${CFLAGS} -c rtst_main.c
@@ -39,6 +42,9 @@ rtst_speedtest.o: rtst_speedtest.c rtst.h
 rtst_error.o: rtst_error.c rtst.h
 	${CC} ${CFLAGS} -c rtst_error.c
 
+rtst_ping.o: rtst_ping.c rtst.h
+	${CC} ${CFLAGS} -c rtst_ping.c
+
 install:
 	$(INSTALL_DIR) ${BINDIR}
 	$(INSTALL_PROG) ${BINARY} ${BINDIR}
@@ -46,7 +52,7 @@ install:
 deinstall:
 	rm -f ${BINDIR}/${BINARY}
 clean: 
-	rm -f *.o ${BINARY} ${BINARY}.gmon
+	rm -f *.o ${BINARY} ${BINARY}.gmon ping
 
 distclean: clean
 	rm -rf Makefile config.h config.log config.status config.cache tags \

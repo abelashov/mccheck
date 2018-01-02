@@ -270,84 +270,20 @@ static void do_test(struct url * config, struct rtst_stat * st, int pingtest)
 	}
 }
 
-static void parse_ping_stat(char * s, struct rtst_pingstat * st)
-{
-	char			*peq, *token;
-
-	st->minping = RTST_PING_TO_MS;
-	st->avgping = RTST_PING_TO_MS;
-	st->maxping = RTST_PING_TO_MS;
-
-/*
- * Example ping output:
- * rtt min/avg/max/mdev = 14.171/20.923/39.871/10.946 ms
- */
-
-#if 0
-	printf("%s", s);
-#endif
-
-	if ((peq = strstr(s, "=")) == NULL) {
-		return;
-	}
-	peq++;
-	while (*peq == ' ' && *peq) {
-		peq++;
-	}
-	if (*peq == 0) {
-		return;
-	}
-	token = strtok(peq, "/");		/* min */
-	if (token) {
-		st->minping = 0.5 + atof(token);
-		token = strtok(NULL, "/");	/* avg */
-	}
-	if (token) {
-		st->avgping = 0.5 + atof(token);
-		token = strtok(NULL, "/");	/* max */
-	}
-	if (token) {
-		st->maxping = 0.5 + atof(token);
-	}
-
-	if (st->minping > 2 * RTST_PING_TO_MS) {
-		st->minping = 2 * RTST_PING_TO_MS;
-	}
-	if (st->avgping > 2 * RTST_PING_TO_MS) {
-		st->avgping = 2 * RTST_PING_TO_MS;
-	}
-	if (st->maxping > 2 * RTST_PING_TO_MS) {
-		st->maxping = 2 * RTST_PING_TO_MS;
-	}
-}
-
 static void exec_ping(const char * host, struct rtst_pingstat * st)
 {
-	static char *		buff = NULL;
-	int			len;
-	FILE *			ping;
-	static char *		format = "ping -c 4 -q %s";
+	const char *		argv[16];
+	int			argc = 0;
+
+	argv[argc++] = "ping";
+	argv[argc++] = "-c";
+	argv[argc++] = "4";
+	argv[argc++] = "-q";
+	argv[argc++] = host;
+	argv[argc++] = NULL;
+	argv[argc++] = NULL;
 
 	if (host == NULL) {
-		return;
-	}
-
-	if (buff == NULL) {
-		buff = malloc(1024);
-		if (buff == NULL) {
-			rtst_error(
-			 "No free memory for ping buffers\n");
-		}
-	}
-
-	len = strlen(format) + strlen(host) - 2 + 1;
-	if (len > 1024) {
-		rtst_error("Internal error: buffer overflow\n");
-	}
-	sprintf(buff, format, host);
-
-	if ((ping = popen(buff, "r")) == NULL) {
-		rtst_warning("Can't executing ping\n");
 		return;
 	}
 
@@ -355,13 +291,7 @@ static void exec_ping(const char * host, struct rtst_pingstat * st)
 	st->avgping = RTST_PING_TO_MS;
 	st->maxping = RTST_PING_TO_MS;
 
-	while (fgets(buff, 1023, ping)) {
-		if (strstr(buff, " min/avg/max")) {
-			parse_ping_stat(buff, st);
-		}
-	}
-
-	pclose(ping);
+	rtst_ping_main(0, argv, st);
 }
 
 static void do_ping(struct url * config, struct rtst_stat * st)

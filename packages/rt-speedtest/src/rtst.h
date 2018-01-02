@@ -127,4 +127,7 @@ long rtst_msdiff(struct timeval *, struct timeval *);
 void rtst_warning(char * string, ...);
 void rtst_error(char * string, ...);
 
+/* Functions in rtst_ping.c */
+int rtst_ping_main(int opt, const char **argv, struct rtst_pingstat * st);
+
 #endif /* _RTST_H_ */
