@@ -20,12 +20,15 @@ INCLUDE = -I. -I/usr/local/include
 CFLAGS = -O2 -Wall -pedantic -DLINUX=1 ${DEBUG} ${INCLUDE}
 
 BINARY = rt-speedtest
-OBJECTS = rtst_main.o rtst_opts.o rtst_speedtest.o rtst_error.o
+OBJECTS = rtst_main.o rtst_opts.o rtst_speedtest.o rtst_error.o rtst_ping.o
 
 all: ${BINARY} Makefile
 
 ${BINARY}: ${OBJECTS}
 	${CC} ${CFLAGS} -o ${BINARY} ${OBJECTS} 
+
+ping: rtst_ping.c rtst_error.o
+	${CC} ${CFLAGS} -DSTANDALONE=1 -o ping rtst_ping.c rtst_error.o
 
 rtst_main.o: rtst_main.c rtst.h
 	${CC} ${CFLAGS} -c rtst_main.c
@@ -38,6 +41,9 @@ rtst_speedtest.o: rtst_speedtest.c rtst.h
 
 rtst_error.o: rtst_error.c rtst.h
 	${CC} ${CFLAGS} -c rtst_error.c
+
+rtst_ping.o: rtst_ping.c rtst.h
+	${CC} ${CFLAGS} -c rtst_ping.c
 
 install:
 	$(INSTALL_DIR) ${BINDIR}
