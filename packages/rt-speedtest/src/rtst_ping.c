@@ -517,7 +517,7 @@ static void sendping_tail(void (*sp)(int), int size_pkt)
 	 * it doesn't matter */
 	sz = sendto(pingsock, G.snd_packet, size_pkt, 0, &pingaddr.sa, sizeof(pingaddr));
 	if (sz != size_pkt)
-		rtst_error("Write (sendto) error\n");
+		rtst_warning("Write (sendto) error\n");
 
 	if (pingcount == 0 || deadline || G.ntransmitted < pingcount) {
 		/* Didn't send all pings yet - schedule next in 1s */

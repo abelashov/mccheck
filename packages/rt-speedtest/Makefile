@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=rt-speedtest
-PKG_RELEASE:=9
+PKG_RELEASE:=10
 
 PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
 
